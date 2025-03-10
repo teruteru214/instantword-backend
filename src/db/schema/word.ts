@@ -16,12 +16,12 @@ export const words = mysqlTable(
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		word: varchar("word", { length: 50 }).notNull(),
-		position: varchar("position", { length: 255 }).notNull(),
 		translation: varchar("translation", { length: 100 }),
-		frequency: tinyint("frequency", { unsigned: true }).notNull(),
 		pronunciation: varchar("pronunciation", { length: 200 }),
 		meaning: varchar("meaning", { length: 300 }),
-		etymology: varchar("etymology", { length: 200 }),
+		frequency: tinyint("frequency", { unsigned: true }).notNull(),
+		trend: varchar("trend", { length: 500 }),
+		etymology: varchar("etymology", { length: 500 }),
 		other: varchar("other", { length: 500 }),
 		img: varchar("img", { length: 250 }),
 	},
@@ -30,26 +30,20 @@ export const words = mysqlTable(
 	}),
 );
 
-export const wordRoles = mysqlTable(
-	"word_roles",
+export const examples = mysqlTable(
+	"examples",
 	{
 		id: serial("id").primaryKey(),
 		wordId: bigint("word_id", { mode: "number", unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
-		roleId: bigint("role_id", { mode: "number", unsigned: true })
-			.notNull()
-			.references(() => roles.id, { onDelete: "cascade" }),
+		text: varchar("text", { length: 100 }).notNull(),
+		translation: varchar("translation", { length: 200 }),
 	},
 	(table) => ({
-		wordRoleIndex: index("idx_word_roles").on(table.wordId, table.roleId),
+		wordIdIndex: index("idx_examples_word_id").on(table.wordId),
 	}),
 );
-
-export const roles = mysqlTable("roles", {
-	id: serial("id").primaryKey(),
-	name: varchar("name", { length: 50 }).notNull().unique(),
-});
 
 export const collocations = mysqlTable(
 	"collocations",
@@ -66,17 +60,83 @@ export const collocations = mysqlTable(
 	}),
 );
 
-export const examples = mysqlTable(
-	"examples",
+export const derivations = mysqlTable(
+	"derivations",
 	{
 		id: serial("id").primaryKey(),
 		wordId: bigint("word_id", { mode: "number", unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
-		text: varchar("text", { length: 200 }).notNull(),
-		translation: varchar("translation", { length: 300 }),
+		text: varchar("text", { length: 100 }).notNull(),
+		translation: varchar("translation", { length: 200 }),
 	},
 	(table) => ({
-		wordIdIndex: index("idx_examples_word_id").on(table.wordId),
+		wordDerivationIndex: index("idx_derivations_word").on(table.wordId),
 	}),
 );
+
+export const phrasal_verbs = mysqlTable(
+	"phrasal_verbs",
+	{
+		id: serial("id").primaryKey(),
+		wordId: bigint("word_id", { mode: "number", unsigned: true })
+			.notNull()
+			.references(() => words.id, { onDelete: "cascade" }),
+		text: varchar("text", { length: 50 }).notNull(),
+		translation: varchar("translation", { length: 100 }),
+	},
+	(table) => ({
+		wordPhrasalVerbsIndex: index("idx_phrasal_verbs_word").on(table.wordId),
+	}),
+);
+
+export const synonyms = mysqlTable(
+	"synonyms",
+	{
+		id: serial("id").primaryKey(),
+		wordId: bigint("word_id", { mode: "number", unsigned: true })
+			.notNull()
+			.references(() => words.id, { onDelete: "cascade" }),
+		text: varchar("text", { length: 50 }).notNull(),
+		translation: varchar("translation", { length: 100 }),
+	},
+	(table) => ({
+		wordSynonymsIndex: index("idx_synonyms_word").on(table.wordId),
+	}),
+);
+
+export const antonyms = mysqlTable(
+	"antonyms",
+	{
+		id: serial("id").primaryKey(),
+		wordId: bigint("word_id", { mode: "number", unsigned: true })
+			.notNull()
+			.references(() => words.id, { onDelete: "cascade" }),
+		text: varchar("text", { length: 50 }).notNull(),
+		translation: varchar("translation", { length: 100 }),
+	},
+	(table) => ({
+		wordAntonymsIndex: index("idx_antonyms_word").on(table.wordId),
+	}),
+);
+
+export const word_types = mysqlTable(
+	"word_types",
+	{
+		id: serial("id").primaryKey(),
+		wordId: bigint("word_id", { mode: "number", unsigned: true })
+			.notNull()
+			.references(() => words.id, { onDelete: "cascade" }),
+		typeId: tinyint("type_id", { unsigned: true })
+			.notNull()
+			.references(() => types.id, { onDelete: "cascade" }),
+	},
+	(table) => ({
+		wordTypeIndex: index("idx_word_types").on(table.wordId, table.typeId),
+	}),
+);
+
+export const types = mysqlTable("types", {
+	id: tinyint("id", { unsigned: true }).primaryKey().autoincrement(),
+	name: varchar("name", { length: 50 }).notNull().unique(),
+});
