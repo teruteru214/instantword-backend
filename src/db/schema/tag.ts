@@ -1,6 +1,5 @@
 import {
 	bigint,
-	boolean,
 	index,
 	mysqlTable,
 	serial,
@@ -18,7 +17,6 @@ export const tags = mysqlTable(
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		name: varchar("name", { length: 15 }).notNull(),
-		public: boolean("public").notNull().default(false),
 	},
 	(table) => ({
 		userTagUnique: unique("idx_tags_user_name").on(table.userId, table.name),
