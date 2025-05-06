@@ -1,5 +1,6 @@
 import {
 	bigint,
+	date,
 	index,
 	mysqlTable,
 	serial,
@@ -20,13 +21,16 @@ export const words = mysqlTable(
 		pronunciation: varchar("pronunciation", { length: 200 }),
 		meaning: varchar("meaning", { length: 300 }),
 		frequency: tinyint("frequency", { unsigned: true }).notNull(),
-		trend: varchar("trend", { length: 500 }),
 		etymology: varchar("etymology", { length: 500 }),
-		other: varchar("other", { length: 500 }),
+		note: varchar("note", { length: 500 }),
 		img: varchar("img", { length: 250 }),
+		deleted_at: date("deleted_at"),
 	},
 	(table) => ({
 		userWordIndex: index("idx_words_user_word").on(table.userId, table.word),
+		frequencyIndex: index("idx_words_frequency").on(table.frequency),
+		wordIndex: index("idx_words_word").on(table.word),
+		deleteAtIndex: index("idx_words_deleted_at").on(table.deleted_at),
 	}),
 );
 
@@ -140,3 +144,19 @@ export const types = mysqlTable("types", {
 	id: tinyint("id", { unsigned: true }).primaryKey().autoincrement(),
 	name: varchar("name", { length: 50 }).notNull().unique(),
 });
+
+export const user_words = mysqlTable(
+	"user_words",
+	{
+		id: serial("id").primaryKey(),
+		userId: bigint("user_id", { mode: "number", unsigned: true })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		wordId: bigint("word_id", { mode: "number", unsigned: true })
+			.notNull()
+			.references(() => words.id, { onDelete: "cascade" }),
+	},
+	(table) => ({
+		userWordIndex: index("idx_user_words").on(table.userId, table.wordId),
+	}),
+);

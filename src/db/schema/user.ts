@@ -20,4 +20,5 @@ export const users = mysqlTable("users", {
 		.notNull()
 		.default("en-US-Standard-H"),
 	stripe_customer_id: varchar("stripe_customer_id", { length: 255 }).unique(),
+	note_prompt: varchar("note_prompt", { length: 500 }),
 });

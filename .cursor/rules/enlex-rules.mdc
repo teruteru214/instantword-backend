@@ -1,0 +1,98 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+かしこまりました、ご主人様。以下に、TiDB Serverless の利用と MySQL 互換性に関する情報を追記した `enlex-backend` 用 Cursor Project Rules の完全版をお届けします。
+
+---
+
+# 🧠 Cursor Project Rules for enlex-backend
+
+このルールは、`enlex-backend` プロジェクトにおいて Cursor が適切に補完・提案・編集できるよう、編集対象および禁止対象を定義します。
+
+---
+
+## 📁 重要ディレクトリと役割
+
+* `src/db/drizzle/`：Drizzle ORM によるマイグレーション・DDL 関連ファイル。
+* `src/db/schema/`：テーブル定義や Zod 型定義など、スキーマ関連ロジックを保持。
+* `src/index.ts`：Hono アプリのエントリーポイント（ルーティング、エラーハンドリング、Middleware の適用など）。
+* `functions/`：Cloudflare Workers として動作する API エンドポイント群。
+
+---
+
+## ✅ 編集・補完対象（Cursor に認識させる）
+
+以下のパスを Cursor に明示的に認識させ、補完・編集対象とします：
+
+* `src/**/*.{ts,tsx}`
+* `functions/**/*.{ts,tsx}`
+* `drizzle.config.ts`
+* `package.json`
+* `tsconfig.json`
+
+---
+
+## 🚫 読み取り・編集禁止パス
+
+Cursor には、以下のパスを読み込ませず、補完対象から除外させます：
+
+* `.env`
+* `.dev.vars`
+* `.wrangler/`
+* `wrangler.toml`
+* `node_modules/`
+* `build/`
+* `dist/`
+
+### 理由：
+
+* `.env`, `.dev.vars`：環境変数の漏洩リスク防止
+* `.wrangler/`, `wrangler.toml`：Cloudflare Workers の設定ファイル（編集不要）
+* `node_modules/`, `build/`, `dist/`：生成物や外部依存のため
+
+---
+
+## ⚙️ Hono 構成と制約
+
+* `index.ts` にアプリのエントリーポイントを集約。
+* `app.route()` によるルーティングの階層構造は明示的に記述されており、Cursor が自動ルーティング提案を行わないようにします。
+* Middleware の適用順序（`app.use()`）は厳密に保つ必要があるため、Cursor による順序変更は禁止。
+
+---
+
+## 🧩 Drizzle ORM の利用方針（MySQL / TiDB Serverless 対応）
+
+* `schema/` 配下に `mysqlTable`, `varchar`, `int`, `timestamp` など MySQL に準拠した型で明示的に定義。
+* Zod を併用することで型の安全性とバリデーションの一致を保証。
+* `drizzle.config.ts` と `sql/` ディレクトリを認識させ、マイグレーションやクエリ補完を可能に。
+* **本プロジェクトは MySQL をベースとした** **TiDB Serverless** **を使用**。これは MySQL 5.7 / 8.0 に高い互換性を持ち、MySQL 用ツールとも互換性あり。
+* TiDB Serverless はスケーラブルかつサーバーレスなアーキテクチャで、Cloudflare Workers などのエッジ環境と非常に相性が良い。
+* クエリの送信には `@tidbcloud/serverless` など HTTP ベースの公式ドライバを使用可能。
+
+---
+
+## ☁️ Cloudflare Workers
+
+* `functions/` 配下は API エンドポイントのルート単位で配置。
+* 各エンドポイントには `onRequestGet`, `onRequestPost` など明示的なハンドラを定義。
+* Cursor には、これらが Workers 環境下で動作する前提で補完を行わせる。
+* TiDB Serverless との接続にあたっては、従来の TCP ではなく HTTP ベースのクライアントを使用し、エッジ実行に適した設計とする。
+
+---
+
+## 🔐 セキュリティ上の注意
+
+* Cursor はトークン・Secrets 等の認識を避ける。
+* エラーハンドリングやログ出力では、内部構造や詳細なスタックトレースを露出させない。
+* `console.log` の使用は開発中に限定し、本番環境では `Logger` ライブラリ等を使用。
+
+---
+
+## 🚀 その他補足方針
+
+* `any` 型は禁止。すべての関数引数・戻り値には厳密な型定義（`interface`, `type`）を行う。
+* `async/await` を用いた非同期処理は必ず `try/catch` で安全にラップ。
+* 型レベルでの安全性を最優先とし、Cursor には推論型の提案ではなく明示的型定義を促す。
+* Cursor に対しては「補完は厳密に・編集は慎重に」を徹底。
