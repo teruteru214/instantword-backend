@@ -7,20 +7,4 @@ export const users = mysqlTable("users", {
 	img: varchar("img", { length: 250 }),
 	uid: varchar("uid", { length: 128 }).notNull().unique(),
 	provider: mysqlEnum("provider", ["google", "magic_link"]).notNull(),
-	speaker: mysqlEnum("speaker", [
-		"en-US-Standard-A",
-		"en-US-Standard-B",
-		"en-US-Standard-C",
-		"en-US-Standard-D",
-		"en-US-Standard-E",
-		"en-US-Standard-F",
-		"en-US-Standard-G",
-		"en-US-Standard-H",
-		"en-US-Standard-I",
-		"en-US-Standard-J",
-	])
-		.notNull()
-		.default("en-US-Standard-H"),
-	stripe_customer_id: varchar("stripe_customer_id", { length: 255 }).unique(),
-	note_prompt: varchar("note_prompt", { length: 500 }),
 });
