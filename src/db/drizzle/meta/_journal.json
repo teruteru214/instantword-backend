@@ -5,36 +5,15 @@
 		{
 			"idx": 0,
 			"version": "5",
-			"when": 1741588903697,
-			"tag": "20250310064143_flat_spectrum",
+			"when": 1747474573941,
+			"tag": "20250517093613_mean_proemial_gods",
 			"breakpoints": true
 		},
 		{
 			"idx": 1,
 			"version": "5",
-			"when": 1746511282330,
-			"tag": "20250506060122_foamy_iron_fist",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "5",
-			"when": 1746511388831,
-			"tag": "20250506060308_nostalgic_wildside",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "5",
-			"when": 1746511538835,
-			"tag": "20250506060538_nice_dreaming_celestial",
-			"breakpoints": true
-		},
-		{
-			"idx": 4,
-			"version": "5",
-			"when": 1746846042026,
-			"tag": "20250510030042_fancy_shinobi_shaw",
+			"when": 1747479767142,
+			"tag": "20250517110247_good_jackpot",
 			"breakpoints": true
 		}
 	]
