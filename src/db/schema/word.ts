@@ -5,6 +5,7 @@ import {
 	mysqlTable,
 	serial,
 	tinyint,
+	unique,
 	varchar,
 } from "drizzle-orm/mysql-core";
 import { users } from "./user";
@@ -17,20 +18,17 @@ export const words = mysqlTable(
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		word: varchar("word", { length: 50 }).notNull(),
-		translation: varchar("translation", { length: 100 }),
+		translation: varchar("translation", { length: 100 }).notNull(),
 		pronunciation: varchar("pronunciation", { length: 200 }),
 		meaning: varchar("meaning", { length: 300 }),
-		frequency: tinyint("frequency", { unsigned: true }).notNull(),
+		frequency: tinyint("frequency", { unsigned: true }),
 		etymology: varchar("etymology", { length: 500 }),
 		note: varchar("note", { length: 500 }),
 		img: varchar("img", { length: 250 }),
-		deleted_at: date("deleted_at"),
 	},
 	(table) => ({
 		userWordIndex: index("idx_words_user_word").on(table.userId, table.word),
-		frequencyIndex: index("idx_words_frequency").on(table.frequency),
 		wordIndex: index("idx_words_word").on(table.word),
-		deleteAtIndex: index("idx_words_deleted_at").on(table.deleted_at),
 	}),
 );
 
@@ -142,11 +140,22 @@ export const word_types = mysqlTable(
 
 export const types = mysqlTable("types", {
 	id: tinyint("id", { unsigned: true }).primaryKey().autoincrement(),
-	name: varchar("name", { length: 50 }).notNull().unique(),
+	category: varchar("category", { length: 20 }).notNull().unique(),
+	name: varchar("name", { length: 20 }).notNull().unique(),
+	description: varchar("description", { length: 50 }).notNull().unique(),
 });
 
-export const user_words = mysqlTable(
-	"user_words",
+export const deletion_schedules = mysqlTable("deletion_schedules", {
+	id: serial("id").primaryKey(),
+	wordId: bigint("word_id", { mode: "number", unsigned: true })
+		.notNull()
+		.unique()
+		.references(() => words.id, { onDelete: "cascade" }),
+	delete_date: date("delete_date").notNull(),
+});
+
+export const inputs = mysqlTable(
+	"inputs",
 	{
 		id: serial("id").primaryKey(),
 		userId: bigint("user_id", { mode: "number", unsigned: true })
@@ -157,6 +166,13 @@ export const user_words = mysqlTable(
 			.references(() => words.id, { onDelete: "cascade" }),
 	},
 	(table) => ({
-		userWordIndex: index("idx_user_words").on(table.userId, table.wordId),
+		inputsUserWordUnique: unique("uq_inputs_user_word").on(
+			table.userId,
+			table.wordId,
+		),
+		inputsUserWordIndex: index("idx_inputs_user_word").on(
+			table.userId,
+			table.wordId,
+		),
 	}),
 );

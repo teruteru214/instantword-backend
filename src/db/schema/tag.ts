@@ -36,7 +36,6 @@ export const tag_words = mysqlTable(
 		position: varchar("position", { length: 20 }).notNull(),
 	},
 	(table) => ({
-		tagWordIndex: index("idx_tag_words").on(table.tagId, table.wordId),
 		wordTagIndex: index("idx_word_tags").on(table.wordId, table.tagId),
 		tagWordUnique: unique("idx_tag_words_unique").on(table.tagId, table.wordId),
 	}),

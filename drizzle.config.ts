@@ -6,7 +6,7 @@ export default defineConfig({
 	out: "./src/db/drizzle",
 
 	dbCredentials: {
-		url: "DATABASE_URL",
+		url: `{ここにDATABASE_URLをはる}?ssl={"rejectUnauthorized":true}`,
 	},
 
 	introspect: {
