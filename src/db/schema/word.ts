@@ -5,6 +5,7 @@ import {
 	mysqlTable,
 	serial,
 	tinyint,
+	unique,
 	varchar,
 } from "drizzle-orm/mysql-core";
 import { users } from "./user";
@@ -165,6 +166,10 @@ export const inputs = mysqlTable(
 			.references(() => words.id, { onDelete: "cascade" }),
 	},
 	(table) => ({
+		inputsUserWordUnique: unique("uq_inputs_user_word").on(
+			table.userId,
+			table.wordId,
+		),
 		inputsUserWordIndex: index("idx_inputs_user_word").on(
 			table.userId,
 			table.wordId,
