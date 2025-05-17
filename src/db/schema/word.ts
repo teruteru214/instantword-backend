@@ -148,6 +148,7 @@ export const deletion_schedules = mysqlTable("deletion_schedules", {
 	id: serial("id").primaryKey(),
 	wordId: bigint("word_id", { mode: "number", unsigned: true })
 		.notNull()
+		.unique()
 		.references(() => words.id, { onDelete: "cascade" }),
 	delete_date: date("delete_date").notNull(),
 });
@@ -164,6 +165,9 @@ export const inputs = mysqlTable(
 			.references(() => words.id, { onDelete: "cascade" }),
 	},
 	(table) => ({
-		userWordIndex: index("idx_user_words").on(table.userId, table.wordId),
+		inputsUserWordIndex: index("idx_inputs_user_word").on(
+			table.userId,
+			table.wordId,
+		),
 	}),
 );

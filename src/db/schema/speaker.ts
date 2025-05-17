@@ -1,6 +1,5 @@
 import {
 	bigint,
-	index,
 	mysqlTable,
 	serial,
 	tinyint,
@@ -20,15 +19,11 @@ export const user_speakers = mysqlTable(
 		id: serial("id").primaryKey(),
 		userId: bigint("user_id", { mode: "number", unsigned: true })
 			.notNull()
+			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),
 		speakerId: tinyint("speaker_id", { unsigned: true })
 			.notNull()
 			.references(() => speakers.id, { onDelete: "cascade" }),
 	},
-	(table) => ({
-		userSpeakerIndex: index("idx_user_speakers").on(
-			table.userId,
-			table.speakerId,
-		),
-	}),
+	// ...
 );
