@@ -1,1 +1,0 @@
-ALTER TABLE `inputs` ADD CONSTRAINT `uq_inputs_user_word` UNIQUE(`user_id`,`word_id`);

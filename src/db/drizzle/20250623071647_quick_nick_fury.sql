@@ -1,14 +1,51 @@
+CREATE TABLE `ai` (
+	`id` tinyint unsigned AUTO_INCREMENT NOT NULL,
+	`name` varchar(20) NOT NULL,
+	CONSTRAINT `ai_id` PRIMARY KEY(`id`),
+	CONSTRAINT `ai_name_unique` UNIQUE(`name`)
+);
+--> statement-breakpoint
+CREATE TABLE `note_prompt` (
+	`id` serial AUTO_INCREMENT NOT NULL,
+	`user_id` bigint unsigned NOT NULL,
+	`text` varchar(50) NOT NULL,
+	CONSTRAINT `note_prompt_id` PRIMARY KEY(`id`),
+	CONSTRAINT `note_prompt_user_id_unique` UNIQUE(`user_id`)
+);
+--> statement-breakpoint
+CREATE TABLE `user_ai` (
+	`id` serial AUTO_INCREMENT NOT NULL,
+	`user_id` bigint unsigned NOT NULL,
+	`ai_id` tinyint unsigned NOT NULL,
+	CONSTRAINT `user_ai_id` PRIMARY KEY(`id`),
+	CONSTRAINT `user_ai_user_id_unique` UNIQUE(`user_id`)
+);
+--> statement-breakpoint
+CREATE TABLE `providers` (
+	`id` serial AUTO_INCREMENT NOT NULL,
+	`user_id` bigint unsigned NOT NULL,
+	`name` enum('google','magic_link') NOT NULL,
+	`uid` varchar(128) NOT NULL,
+	CONSTRAINT `providers_id` PRIMARY KEY(`id`),
+	CONSTRAINT `providers_uid_unique` UNIQUE(`uid`)
+);
+--> statement-breakpoint
+CREATE TABLE `purpose` (
+	`id` serial AUTO_INCREMENT NOT NULL,
+	`user_id` bigint unsigned NOT NULL,
+	`name` varchar(50) NOT NULL,
+	CONSTRAINT `purpose_id` PRIMARY KEY(`id`),
+	CONSTRAINT `purpose_name_unique` UNIQUE(`name`)
+);
+--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`name` varchar(50) NOT NULL,
+	`name` varchar(20) NOT NULL,
 	`email` varchar(255) NOT NULL,
 	`img` varchar(250),
-	`uid` varchar(128) NOT NULL,
-	`provider` enum('google','magic_link') NOT NULL,
 	CONSTRAINT `users_id` PRIMARY KEY(`id`),
 	CONSTRAINT `users_name_unique` UNIQUE(`name`),
-	CONSTRAINT `users_email_unique` UNIQUE(`email`),
-	CONSTRAINT `users_uid_unique` UNIQUE(`uid`)
+	CONSTRAINT `users_email_unique` UNIQUE(`email`)
 );
 --> statement-breakpoint
 CREATE TABLE `antonyms` (
@@ -55,7 +92,8 @@ CREATE TABLE `inputs` (
 	`id` serial AUTO_INCREMENT NOT NULL,
 	`user_id` bigint unsigned NOT NULL,
 	`word_id` bigint unsigned NOT NULL,
-	CONSTRAINT `inputs_id` PRIMARY KEY(`id`)
+	CONSTRAINT `inputs_id` PRIMARY KEY(`id`),
+	CONSTRAINT `uq_inputs_user_word` UNIQUE(`user_id`,`word_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `phrasal_verbs` (
@@ -123,31 +161,43 @@ CREATE TABLE `tags` (
 	CONSTRAINT `idx_tags_user_name` UNIQUE(`user_id`,`name`)
 );
 --> statement-breakpoint
-CREATE TABLE `speakers` (
+CREATE TABLE `speaker` (
 	`id` tinyint unsigned AUTO_INCREMENT NOT NULL,
 	`identifier` varchar(20) NOT NULL,
 	`feature` varchar(20) NOT NULL,
-	CONSTRAINT `speakers_id` PRIMARY KEY(`id`),
-	CONSTRAINT `speakers_identifier_unique` UNIQUE(`identifier`),
-	CONSTRAINT `speakers_feature_unique` UNIQUE(`feature`)
+	CONSTRAINT `speaker_id` PRIMARY KEY(`id`),
+	CONSTRAINT `speaker_identifier_unique` UNIQUE(`identifier`),
+	CONSTRAINT `speaker_feature_unique` UNIQUE(`feature`)
 );
 --> statement-breakpoint
-CREATE TABLE `user_speakers` (
+CREATE TABLE `user_speaker` (
 	`id` serial AUTO_INCREMENT NOT NULL,
 	`user_id` bigint unsigned NOT NULL,
 	`speaker_id` tinyint unsigned NOT NULL,
-	CONSTRAINT `user_speakers_id` PRIMARY KEY(`id`),
-	CONSTRAINT `user_speakers_user_id_unique` UNIQUE(`user_id`)
+	CONSTRAINT `user_speaker_id` PRIMARY KEY(`id`),
+	CONSTRAINT `user_speaker_user_id_unique` UNIQUE(`user_id`)
 );
 --> statement-breakpoint
-CREATE TABLE `note_prompts` (
+CREATE TABLE `language` (
+	`id` tinyint unsigned AUTO_INCREMENT NOT NULL,
+	`name` varchar(20) NOT NULL,
+	CONSTRAINT `language_id` PRIMARY KEY(`id`),
+	CONSTRAINT `language_name_unique` UNIQUE(`name`)
+);
+--> statement-breakpoint
+CREATE TABLE `user_language` (
 	`id` serial AUTO_INCREMENT NOT NULL,
 	`user_id` bigint unsigned NOT NULL,
-	`text` varchar(500) NOT NULL,
-	CONSTRAINT `note_prompts_id` PRIMARY KEY(`id`),
-	CONSTRAINT `note_prompts_user_id_unique` UNIQUE(`user_id`)
+	`language_id` tinyint unsigned NOT NULL,
+	CONSTRAINT `user_language_id` PRIMARY KEY(`id`),
+	CONSTRAINT `user_language_user_id_unique` UNIQUE(`user_id`)
 );
 --> statement-breakpoint
+ALTER TABLE `note_prompt` ADD CONSTRAINT `note_prompt_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `user_ai` ADD CONSTRAINT `user_ai_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `user_ai` ADD CONSTRAINT `user_ai_ai_id_ai_id_fk` FOREIGN KEY (`ai_id`) REFERENCES `ai`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `providers` ADD CONSTRAINT `providers_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `purpose` ADD CONSTRAINT `purpose_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `antonyms` ADD CONSTRAINT `antonyms_word_id_words_id_fk` FOREIGN KEY (`word_id`) REFERENCES `words`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `collocations` ADD CONSTRAINT `collocations_word_id_words_id_fk` FOREIGN KEY (`word_id`) REFERENCES `words`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `deletion_schedules` ADD CONSTRAINT `deletion_schedules_word_id_words_id_fk` FOREIGN KEY (`word_id`) REFERENCES `words`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -163,9 +213,15 @@ ALTER TABLE `words` ADD CONSTRAINT `words_user_id_users_id_fk` FOREIGN KEY (`use
 ALTER TABLE `tag_words` ADD CONSTRAINT `tag_words_tag_id_tags_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `tag_words` ADD CONSTRAINT `tag_words_word_id_words_id_fk` FOREIGN KEY (`word_id`) REFERENCES `words`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `tags` ADD CONSTRAINT `tags_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `user_speakers` ADD CONSTRAINT `user_speakers_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `user_speakers` ADD CONSTRAINT `user_speakers_speaker_id_speakers_id_fk` FOREIGN KEY (`speaker_id`) REFERENCES `speakers`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `note_prompts` ADD CONSTRAINT `note_prompts_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `user_speaker` ADD CONSTRAINT `user_speaker_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `user_speaker` ADD CONSTRAINT `user_speaker_speaker_id_speaker_id_fk` FOREIGN KEY (`speaker_id`) REFERENCES `speaker`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `user_language` ADD CONSTRAINT `user_language_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `user_language` ADD CONSTRAINT `user_language_language_id_language_id_fk` FOREIGN KEY (`language_id`) REFERENCES `language`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX `idx_note_prompt_user_id` ON `note_prompt` (`user_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_ai_user_id` ON `user_ai` (`user_id`);--> statement-breakpoint
+CREATE INDEX `idx_providers_user_id` ON `providers` (`user_id`);--> statement-breakpoint
+CREATE INDEX `idx_providers_uid` ON `providers` (`uid`);--> statement-breakpoint
+CREATE INDEX `idx_purpose_user_id` ON `purpose` (`user_id`);--> statement-breakpoint
 CREATE INDEX `idx_antonyms_word` ON `antonyms` (`word_id`);--> statement-breakpoint
 CREATE INDEX `idx_collocations_word` ON `collocations` (`word_id`);--> statement-breakpoint
 CREATE INDEX `idx_derivations_word` ON `derivations` (`word_id`);--> statement-breakpoint
@@ -176,4 +232,6 @@ CREATE INDEX `idx_synonyms_word` ON `synonyms` (`word_id`);--> statement-breakpo
 CREATE INDEX `idx_word_types` ON `word_types` (`word_id`,`type_id`);--> statement-breakpoint
 CREATE INDEX `idx_words_user_word` ON `words` (`user_id`,`word`);--> statement-breakpoint
 CREATE INDEX `idx_words_word` ON `words` (`word`);--> statement-breakpoint
-CREATE INDEX `idx_word_tags` ON `tag_words` (`word_id`,`tag_id`);
+CREATE INDEX `idx_word_tags` ON `tag_words` (`word_id`,`tag_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_speaker_user_id` ON `user_speaker` (`user_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_language_user_id` ON `user_language` (`user_id`);
