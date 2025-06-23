@@ -36,8 +36,9 @@ export const purpose = mysqlTable(
 		id: serial("id").primaryKey(),
 		userId: bigint("user_id", { mode: "number", unsigned: true })
 			.notNull()
+			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),
-		name: varchar("name", { length: 50 }).notNull().unique(),
+		name: varchar("name", { length: 50 }).notNull(),
 	},
 	(table) => ({
 		userIdIndex: index("idx_purpose_user_id").on(table.userId),
