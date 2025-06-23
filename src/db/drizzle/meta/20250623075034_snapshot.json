@@ -1,9 +1,292 @@
 {
 	"version": "5",
 	"dialect": "mysql",
-	"id": "541b5c99-fc6b-45b1-a426-a63ca04f6914",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "61c4ff77-da76-4e51-b37a-d489959a5135",
+	"prevId": "8a4c3a71-01b2-4e86-8934-346b3475993d",
 	"tables": {
+		"ai": {
+			"name": "ai",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "tinyint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"name": {
+					"name": "name",
+					"type": "varchar(20)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"ai_id": {
+					"name": "ai_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"ai_name_unique": {
+					"name": "ai_name_unique",
+					"columns": ["name"]
+				}
+			},
+			"checkConstraint": {}
+		},
+		"note_prompt": {
+			"name": "note_prompt",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "bigint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"text": {
+					"name": "text",
+					"type": "varchar(50)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"idx_note_prompt_user_id": {
+					"name": "idx_note_prompt_user_id",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"note_prompt_user_id_users_id_fk": {
+					"name": "note_prompt_user_id_users_id_fk",
+					"tableFrom": "note_prompt",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"note_prompt_id": {
+					"name": "note_prompt_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"note_prompt_user_id_unique": {
+					"name": "note_prompt_user_id_unique",
+					"columns": ["user_id"]
+				}
+			},
+			"checkConstraint": {}
+		},
+		"user_ai": {
+			"name": "user_ai",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "bigint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"ai_id": {
+					"name": "ai_id",
+					"type": "tinyint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"idx_user_ai_user_id": {
+					"name": "idx_user_ai_user_id",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"user_ai_user_id_users_id_fk": {
+					"name": "user_ai_user_id_users_id_fk",
+					"tableFrom": "user_ai",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"user_ai_ai_id_ai_id_fk": {
+					"name": "user_ai_ai_id_ai_id_fk",
+					"tableFrom": "user_ai",
+					"tableTo": "ai",
+					"columnsFrom": ["ai_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"user_ai_id": {
+					"name": "user_ai_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"user_ai_user_id_unique": {
+					"name": "user_ai_user_id_unique",
+					"columns": ["user_id"]
+				}
+			},
+			"checkConstraint": {}
+		},
+		"providers": {
+			"name": "providers",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "bigint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "enum('google','magic_link')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"uid": {
+					"name": "uid",
+					"type": "varchar(128)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"idx_providers_user_id": {
+					"name": "idx_providers_user_id",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"idx_providers_uid": {
+					"name": "idx_providers_uid",
+					"columns": ["uid"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"providers_user_id_users_id_fk": {
+					"name": "providers_user_id_users_id_fk",
+					"tableFrom": "providers",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"providers_id": {
+					"name": "providers_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"providers_uid_unique": {
+					"name": "providers_uid_unique",
+					"columns": ["uid"]
+				}
+			},
+			"checkConstraint": {}
+		},
+		"purpose": {
+			"name": "purpose",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "bigint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "varchar(50)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"idx_purpose_user_id": {
+					"name": "idx_purpose_user_id",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"purpose_user_id_users_id_fk": {
+					"name": "purpose_user_id_users_id_fk",
+					"tableFrom": "purpose",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"purpose_id": {
+					"name": "purpose_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"purpose_user_id_unique": {
+					"name": "purpose_user_id_unique",
+					"columns": ["user_id"]
+				}
+			},
+			"checkConstraint": {}
+		},
 		"users": {
 			"name": "users",
 			"columns": {
@@ -16,7 +299,7 @@
 				},
 				"name": {
 					"name": "name",
-					"type": "varchar(50)",
+					"type": "varchar(20)",
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
@@ -33,20 +316,6 @@
 					"type": "varchar(250)",
 					"primaryKey": false,
 					"notNull": false,
-					"autoincrement": false
-				},
-				"uid": {
-					"name": "uid",
-					"type": "varchar(128)",
-					"primaryKey": false,
-					"notNull": true,
-					"autoincrement": false
-				},
-				"provider": {
-					"name": "provider",
-					"type": "enum('google','magic_link')",
-					"primaryKey": false,
-					"notNull": true,
 					"autoincrement": false
 				}
 			},
@@ -66,10 +335,6 @@
 				"users_email_unique": {
 					"name": "users_email_unique",
 					"columns": ["email"]
-				},
-				"users_uid_unique": {
-					"name": "users_uid_unique",
-					"columns": ["uid"]
 				}
 			},
 			"checkConstraint": {}
@@ -419,7 +684,12 @@
 					"columns": ["id"]
 				}
 			},
-			"uniqueConstraints": {},
+			"uniqueConstraints": {
+				"uq_inputs_user_word": {
+					"name": "uq_inputs_user_word",
+					"columns": ["user_id", "word_id"]
+				}
+			},
 			"checkConstraint": {}
 		},
 		"phrasal_verbs": {
@@ -887,8 +1157,8 @@
 			},
 			"checkConstraint": {}
 		},
-		"speakers": {
-			"name": "speakers",
+		"speaker": {
+			"name": "speaker",
 			"columns": {
 				"id": {
 					"name": "id",
@@ -915,25 +1185,25 @@
 			"indexes": {},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {
-				"speakers_id": {
-					"name": "speakers_id",
+				"speaker_id": {
+					"name": "speaker_id",
 					"columns": ["id"]
 				}
 			},
 			"uniqueConstraints": {
-				"speakers_identifier_unique": {
-					"name": "speakers_identifier_unique",
+				"speaker_identifier_unique": {
+					"name": "speaker_identifier_unique",
 					"columns": ["identifier"]
 				},
-				"speakers_feature_unique": {
-					"name": "speakers_feature_unique",
+				"speaker_feature_unique": {
+					"name": "speaker_feature_unique",
 					"columns": ["feature"]
 				}
 			},
 			"checkConstraint": {}
 		},
-		"user_speakers": {
-			"name": "user_speakers",
+		"user_speaker": {
+			"name": "user_speaker",
 			"columns": {
 				"id": {
 					"name": "id",
@@ -957,21 +1227,27 @@
 					"autoincrement": false
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"idx_user_speaker_user_id": {
+					"name": "idx_user_speaker_user_id",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
 			"foreignKeys": {
-				"user_speakers_user_id_users_id_fk": {
-					"name": "user_speakers_user_id_users_id_fk",
-					"tableFrom": "user_speakers",
+				"user_speaker_user_id_users_id_fk": {
+					"name": "user_speaker_user_id_users_id_fk",
+					"tableFrom": "user_speaker",
 					"tableTo": "users",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
 					"onUpdate": "no action"
 				},
-				"user_speakers_speaker_id_speakers_id_fk": {
-					"name": "user_speakers_speaker_id_speakers_id_fk",
-					"tableFrom": "user_speakers",
-					"tableTo": "speakers",
+				"user_speaker_speaker_id_speaker_id_fk": {
+					"name": "user_speaker_speaker_id_speaker_id_fk",
+					"tableFrom": "user_speaker",
+					"tableTo": "speaker",
 					"columnsFrom": ["speaker_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
@@ -979,21 +1255,55 @@
 				}
 			},
 			"compositePrimaryKeys": {
-				"user_speakers_id": {
-					"name": "user_speakers_id",
+				"user_speaker_id": {
+					"name": "user_speaker_id",
 					"columns": ["id"]
 				}
 			},
 			"uniqueConstraints": {
-				"user_speakers_user_id_unique": {
-					"name": "user_speakers_user_id_unique",
+				"user_speaker_user_id_unique": {
+					"name": "user_speaker_user_id_unique",
 					"columns": ["user_id"]
 				}
 			},
 			"checkConstraint": {}
 		},
-		"note_prompts": {
-			"name": "note_prompts",
+		"language": {
+			"name": "language",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "tinyint unsigned",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"name": {
+					"name": "name",
+					"type": "varchar(20)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"language_id": {
+					"name": "language_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"language_name_unique": {
+					"name": "language_name_unique",
+					"columns": ["name"]
+				}
+			},
+			"checkConstraint": {}
+		},
+		"user_language": {
+			"name": "user_language",
 			"columns": {
 				"id": {
 					"name": "id",
@@ -1009,35 +1319,50 @@
 					"notNull": true,
 					"autoincrement": false
 				},
-				"text": {
-					"name": "text",
-					"type": "varchar(500)",
+				"language_id": {
+					"name": "language_id",
+					"type": "tinyint unsigned",
 					"primaryKey": false,
 					"notNull": true,
 					"autoincrement": false
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"idx_user_language_user_id": {
+					"name": "idx_user_language_user_id",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
 			"foreignKeys": {
-				"note_prompts_user_id_users_id_fk": {
-					"name": "note_prompts_user_id_users_id_fk",
-					"tableFrom": "note_prompts",
+				"user_language_user_id_users_id_fk": {
+					"name": "user_language_user_id_users_id_fk",
+					"tableFrom": "user_language",
 					"tableTo": "users",
 					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"user_language_language_id_language_id_fk": {
+					"name": "user_language_language_id_language_id_fk",
+					"tableFrom": "user_language",
+					"tableTo": "language",
+					"columnsFrom": ["language_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
 					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {
-				"note_prompts_id": {
-					"name": "note_prompts_id",
+				"user_language_id": {
+					"name": "user_language_id",
 					"columns": ["id"]
 				}
 			},
 			"uniqueConstraints": {
-				"note_prompts_user_id_unique": {
-					"name": "note_prompts_user_id_unique",
+				"user_language_user_id_unique": {
+					"name": "user_language_user_id_unique",
 					"columns": ["user_id"]
 				}
 			},
