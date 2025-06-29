@@ -45,7 +45,7 @@ export async function createUser(
 				.execute();
 
 			// TiDB Serverlessの戻り値からinsertIdを取得
-			// @ts-ignore - TiDB Serverlessの型定義の問題を回避
+			// @ts-ignore
 			userId = userResult.lastInsertId;
 
 			if (!userId || userId <= 0) {
@@ -80,6 +80,10 @@ export async function createUser(
 						languageId: languageResult[0].id,
 					})
 					.execute();
+			} else {
+				console.warn(
+					`Language '${params.language}' not found for user ${userId}`,
+				);
 			}
 
 			// 5. purposeテーブルに目的を登録
