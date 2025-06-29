@@ -41,17 +41,3 @@ export function getDB(): DB {
 	}
 	return dbInstance;
 }
-
-// 接続の状態を確認する関数
-export async function checkDBConnection(): Promise<boolean> {
-	try {
-		if (!client) {
-			return false;
-		}
-		// TiDB ServerlessはHTTP接続なので、簡単なクエリで接続確認
-		return true;
-	} catch (error) {
-		console.error("Database connection check failed:", error);
-		return false;
-	}
-}
