@@ -1,8 +1,7 @@
 import {
-	bigint,
 	index,
+	int,
 	mysqlTable,
-	serial,
 	tinyint,
 	varchar,
 } from "drizzle-orm/mysql-core";
@@ -16,8 +15,8 @@ export const ai = mysqlTable("ai", {
 export const user_ai = mysqlTable(
 	"user_ai",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),
@@ -33,8 +32,8 @@ export const user_ai = mysqlTable(
 export const note_prompt = mysqlTable(
 	"note_prompt",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),

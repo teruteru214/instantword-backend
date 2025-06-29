@@ -1,26 +1,41 @@
-import { drizzle } from "drizzle-orm/mysql2";
+import { connect } from "@tidbcloud/serverless";
+import { drizzle } from "drizzle-orm/tidb-serverless";
+import type { TiDBServerlessDatabase } from "drizzle-orm/tidb-serverless";
 import type { Context } from "hono";
-import { env } from "hono/adapter";
-import mysql from "mysql2/promise";
+import type { Bindings } from "../types/binding";
+import type * as schema from "./schema";
 
-let connectionPool: mysql.Pool | null = null;
-let dbInstance: ReturnType<typeof drizzle> | null = null;
+// スキーマの型を定義
+export type Schema = typeof schema;
+export type DB = TiDBServerlessDatabase<Schema>;
 
-export async function initDB(c: Context) {
-	if (!connectionPool) {
-		const { DATABASE_URL } = env(c);
-		connectionPool = await mysql.createPool({
-			uri: DATABASE_URL,
-			ssl: {
-				rejectUnauthorized: true,
-			},
-		});
-		dbInstance = drizzle(connectionPool);
+let client: ReturnType<typeof connect> | null = null;
+let dbInstance: DB | null = null;
+
+export async function initDB(c: Context<{ Bindings: Bindings }>): Promise<DB> {
+	try {
+		if (!client) {
+			const { DATABASE_URL } = c.env;
+
+			// TiDB Serverless用のクライアントを作成
+			client = connect({ url: DATABASE_URL });
+			dbInstance = drizzle({ client: client });
+		}
+
+		if (!dbInstance) {
+			throw new Error("Database initialization failed");
+		}
+		return dbInstance;
+	} catch (error) {
+		console.error("Database initialization error:", error);
+		// クライアントをリセット
+		client = null;
+		dbInstance = null;
+		throw error;
 	}
-	return dbInstance;
 }
 
-export function getDB() {
+export function getDB(): DB {
 	if (!dbInstance) {
 		throw new Error("Database not initialized. Call initDB first.");
 	}

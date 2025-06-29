@@ -1,9 +1,8 @@
 import {
-	bigint,
 	date,
 	index,
+	int,
 	mysqlTable,
-	serial,
 	tinyint,
 	unique,
 	varchar,
@@ -13,8 +12,8 @@ import { users } from "./user";
 export const words = mysqlTable(
 	"words",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		word: varchar("word", { length: 50 }).notNull(),
@@ -35,8 +34,8 @@ export const words = mysqlTable(
 export const examples = mysqlTable(
 	"examples",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		text: varchar("text", { length: 100 }).notNull(),
@@ -50,8 +49,8 @@ export const examples = mysqlTable(
 export const collocations = mysqlTable(
 	"collocations",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		text: varchar("text", { length: 100 }).notNull(),
@@ -65,8 +64,8 @@ export const collocations = mysqlTable(
 export const derivations = mysqlTable(
 	"derivations",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		text: varchar("text", { length: 100 }).notNull(),
@@ -80,8 +79,8 @@ export const derivations = mysqlTable(
 export const phrasal_verbs = mysqlTable(
 	"phrasal_verbs",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		text: varchar("text", { length: 50 }).notNull(),
@@ -95,8 +94,8 @@ export const phrasal_verbs = mysqlTable(
 export const synonyms = mysqlTable(
 	"synonyms",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		text: varchar("text", { length: 50 }).notNull(),
@@ -110,8 +109,8 @@ export const synonyms = mysqlTable(
 export const antonyms = mysqlTable(
 	"antonyms",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		text: varchar("text", { length: 50 }).notNull(),
@@ -125,8 +124,8 @@ export const antonyms = mysqlTable(
 export const word_types = mysqlTable(
 	"word_types",
 	{
-		id: serial("id").primaryKey(),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		typeId: tinyint("type_id", { unsigned: true })
@@ -146,8 +145,8 @@ export const types = mysqlTable("types", {
 });
 
 export const deletion_schedules = mysqlTable("deletion_schedules", {
-	id: serial("id").primaryKey(),
-	wordId: bigint("word_id", { mode: "number", unsigned: true })
+	id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+	wordId: int("word_id", { unsigned: true })
 		.notNull()
 		.unique()
 		.references(() => words.id, { onDelete: "cascade" }),
@@ -157,11 +156,11 @@ export const deletion_schedules = mysqlTable("deletion_schedules", {
 export const inputs = mysqlTable(
 	"inputs",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 	},

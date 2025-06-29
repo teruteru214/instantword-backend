@@ -1,14 +1,13 @@
 import {
-	bigint,
 	index,
+	int,
 	mysqlEnum,
 	mysqlTable,
-	serial,
 	varchar,
 } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
-	id: serial("id").primaryKey(),
+	id: int("id", { unsigned: true }).primaryKey().autoincrement(),
 	name: varchar("name", { length: 20 }).notNull().unique(),
 	email: varchar("email", { length: 255 }).notNull().unique(),
 	img: varchar("img", { length: 250 }),
@@ -17,8 +16,8 @@ export const users = mysqlTable("users", {
 export const providers = mysqlTable(
 	"providers",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		name: mysqlEnum("name", ["google", "magic_link"]).notNull(),
@@ -33,8 +32,8 @@ export const providers = mysqlTable(
 export const purpose = mysqlTable(
 	"purpose",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),

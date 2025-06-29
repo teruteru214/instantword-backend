@@ -1,1 +1,0 @@
-ALTER TABLE `purpose` DROP INDEX `purpose_name_unique`;

@@ -1,8 +1,7 @@
 import {
-	bigint,
 	index,
+	int,
 	mysqlTable,
-	serial,
 	unique,
 	varchar,
 } from "drizzle-orm/mysql-core";
@@ -12,8 +11,8 @@ import { words } from "./word";
 export const tags = mysqlTable(
 	"tags",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		name: varchar("name", { length: 15 }).notNull(),
@@ -26,11 +25,11 @@ export const tags = mysqlTable(
 export const tag_words = mysqlTable(
 	"tag_words",
 	{
-		id: serial("id").primaryKey(),
-		tagId: bigint("tag_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		tagId: int("tag_id", { unsigned: true })
 			.notNull()
 			.references(() => tags.id, { onDelete: "cascade" }),
-		wordId: bigint("word_id", { mode: "number", unsigned: true })
+		wordId: int("word_id", { unsigned: true })
 			.notNull()
 			.references(() => words.id, { onDelete: "cascade" }),
 		position: varchar("position", { length: 20 }).notNull(),
