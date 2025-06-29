@@ -6,24 +6,24 @@ CREATE TABLE `ai` (
 );
 --> statement-breakpoint
 CREATE TABLE `note_prompt` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`text` varchar(50) NOT NULL,
 	CONSTRAINT `note_prompt_id` PRIMARY KEY(`id`),
 	CONSTRAINT `note_prompt_user_id_unique` UNIQUE(`user_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `user_ai` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`ai_id` tinyint unsigned NOT NULL,
 	CONSTRAINT `user_ai_id` PRIMARY KEY(`id`),
 	CONSTRAINT `user_ai_user_id_unique` UNIQUE(`user_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `providers` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`name` enum('google','magic_link') NOT NULL,
 	`uid` varchar(128) NOT NULL,
 	CONSTRAINT `providers_id` PRIMARY KEY(`id`),
@@ -31,15 +31,15 @@ CREATE TABLE `providers` (
 );
 --> statement-breakpoint
 CREATE TABLE `purpose` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`name` varchar(50) NOT NULL,
 	CONSTRAINT `purpose_id` PRIMARY KEY(`id`),
-	CONSTRAINT `purpose_name_unique` UNIQUE(`name`)
+	CONSTRAINT `purpose_user_id_unique` UNIQUE(`user_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `users` (
-	`id` serial AUTO_INCREMENT NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
 	`name` varchar(20) NOT NULL,
 	`email` varchar(255) NOT NULL,
 	`img` varchar(250),
@@ -49,64 +49,64 @@ CREATE TABLE `users` (
 );
 --> statement-breakpoint
 CREATE TABLE `antonyms` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`text` varchar(50) NOT NULL,
 	`translation` varchar(100),
 	CONSTRAINT `antonyms_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `collocations` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`text` varchar(100) NOT NULL,
 	`translation` varchar(200),
 	CONSTRAINT `collocations_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `deletion_schedules` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`delete_date` date NOT NULL,
 	CONSTRAINT `deletion_schedules_id` PRIMARY KEY(`id`),
 	CONSTRAINT `deletion_schedules_word_id_unique` UNIQUE(`word_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `derivations` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`text` varchar(100) NOT NULL,
 	`translation` varchar(200),
 	CONSTRAINT `derivations_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `examples` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`text` varchar(100) NOT NULL,
 	`translation` varchar(200),
 	CONSTRAINT `examples_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `inputs` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	CONSTRAINT `inputs_id` PRIMARY KEY(`id`),
 	CONSTRAINT `uq_inputs_user_word` UNIQUE(`user_id`,`word_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `phrasal_verbs` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`text` varchar(50) NOT NULL,
 	`translation` varchar(100),
 	CONSTRAINT `phrasal_verbs_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `synonyms` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`text` varchar(50) NOT NULL,
 	`translation` varchar(100),
 	CONSTRAINT `synonyms_id` PRIMARY KEY(`id`)
@@ -124,15 +124,15 @@ CREATE TABLE `types` (
 );
 --> statement-breakpoint
 CREATE TABLE `word_types` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`type_id` tinyint unsigned NOT NULL,
 	CONSTRAINT `word_types_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `words` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`word` varchar(50) NOT NULL,
 	`translation` varchar(100) NOT NULL,
 	`pronunciation` varchar(200),
@@ -145,17 +145,17 @@ CREATE TABLE `words` (
 );
 --> statement-breakpoint
 CREATE TABLE `tag_words` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`tag_id` bigint unsigned NOT NULL,
-	`word_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`tag_id` int unsigned NOT NULL,
+	`word_id` int unsigned NOT NULL,
 	`position` varchar(20) NOT NULL,
 	CONSTRAINT `tag_words_id` PRIMARY KEY(`id`),
 	CONSTRAINT `idx_tag_words_unique` UNIQUE(`tag_id`,`word_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `tags` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`name` varchar(15) NOT NULL,
 	CONSTRAINT `tags_id` PRIMARY KEY(`id`),
 	CONSTRAINT `idx_tags_user_name` UNIQUE(`user_id`,`name`)
@@ -171,8 +171,8 @@ CREATE TABLE `speaker` (
 );
 --> statement-breakpoint
 CREATE TABLE `user_speaker` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`speaker_id` tinyint unsigned NOT NULL,
 	CONSTRAINT `user_speaker_id` PRIMARY KEY(`id`),
 	CONSTRAINT `user_speaker_user_id_unique` UNIQUE(`user_id`)
@@ -186,8 +186,8 @@ CREATE TABLE `language` (
 );
 --> statement-breakpoint
 CREATE TABLE `user_language` (
-	`id` serial AUTO_INCREMENT NOT NULL,
-	`user_id` bigint unsigned NOT NULL,
+	`id` int unsigned AUTO_INCREMENT NOT NULL,
+	`user_id` int unsigned NOT NULL,
 	`language_id` tinyint unsigned NOT NULL,
 	CONSTRAINT `user_language_id` PRIMARY KEY(`id`),
 	CONSTRAINT `user_language_user_id_unique` UNIQUE(`user_id`)

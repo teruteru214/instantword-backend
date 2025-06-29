@@ -1,8 +1,7 @@
 import {
-	bigint,
 	index,
+	int,
 	mysqlTable,
-	serial,
 	tinyint,
 	varchar,
 } from "drizzle-orm/mysql-core";
@@ -16,8 +15,8 @@ export const language = mysqlTable("language", {
 export const user_language = mysqlTable(
 	"user_language",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),

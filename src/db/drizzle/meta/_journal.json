@@ -5,22 +5,8 @@
 		{
 			"idx": 0,
 			"version": "5",
-			"when": 1750663007944,
-			"tag": "20250623071647_quick_nick_fury",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "5",
-			"when": 1750664158041,
-			"tag": "20250623073558_old_invisible_woman",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "5",
-			"when": 1750665034439,
-			"tag": "20250623075034_cultured_spitfire",
+			"when": 1750923081340,
+			"tag": "20250626073121_late_the_fury",
 			"breakpoints": true
 		}
 	]

@@ -1,8 +1,7 @@
 import {
-	bigint,
 	index,
+	int,
 	mysqlTable,
-	serial,
 	tinyint,
 	varchar,
 } from "drizzle-orm/mysql-core";
@@ -17,8 +16,8 @@ export const speaker = mysqlTable("speaker", {
 export const user_speaker = mysqlTable(
 	"user_speaker",
 	{
-		id: serial("id").primaryKey(),
-		userId: bigint("user_id", { mode: "number", unsigned: true })
+		id: int("id", { unsigned: true }).primaryKey().autoincrement(),
+		userId: int("user_id", { unsigned: true })
 			.notNull()
 			.unique()
 			.references(() => users.id, { onDelete: "cascade" }),
