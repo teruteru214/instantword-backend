@@ -18,41 +18,36 @@ export async function verifyJwtToken(token: string): Promise<boolean> {
 		const publicKeys = await getGooglePublicKeys();
 
 		// 2. 各公開鍵でJWT検証を試行
-		for (const [kid, certificate] of Object.entries(publicKeys)) {
+		for (const [, certificate] of Object.entries(publicKeys)) {
 			try {
-				console.log("Attempting JWT verification with kid:", kid);
-
 				// X.509証明書を公開鍵としてインポート
 				const publicKey = await importX509(certificate, "RS256");
 
 				// JWT検証（署名検証のみ）
 				const { payload } = await jwtVerify(token, publicKey);
 
-				console.log("JWT verification successful with kid:", kid);
-
 				// 有効期限チェック
 				const currentTime = Math.floor(Date.now() / 1000);
 				if (payload.exp && payload.exp < currentTime) {
-					console.error("JWT expired");
+					return false;
+				}
+
+				// 発行時刻の検証（過去すぎる場合は無効）
+				if (payload.iat && payload.iat > currentTime + 300) {
+					console.error("JWT issued in the future");
 					return false;
 				}
 
 				return true;
-			} catch (verifyError) {
-				const errorMessage =
-					verifyError instanceof Error
-						? verifyError.message
-						: String(verifyError);
-				console.log(`JWT verification failed with kid ${kid}:`, errorMessage);
+			} catch {
+				// セキュリティのため、詳細なエラー情報は出力しない
+				return false;
 			}
 		}
 
-		// すべてのキーで検証に失敗
-		console.error("JWT signature verification failed with all available keys");
 		return false;
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		console.error("JWT verification failed:", errorMessage);
+	} catch {
+		// セキュリティのため、詳細なエラー情報は出力しない
 		return false;
 	}
 }

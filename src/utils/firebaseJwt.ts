@@ -74,31 +74,20 @@ export async function verifyAndExtractFirebaseJwt(
 	token: string,
 ): Promise<JWTResult> {
 	try {
-		console.log("Starting JWT verification for token length:", token.length);
-
 		// 1. Google公開鍵を取得
 		const publicKeys = await getGooglePublicKeys();
-		console.log("Retrieved public keys count:", Object.keys(publicKeys).length);
 
 		// 2. 各公開鍵でJWT検証を試行
-		for (const [kid, certificate] of Object.entries(publicKeys)) {
+		for (const [, certificate] of Object.entries(publicKeys)) {
 			try {
-				console.log("Attempting JWT verification with kid:", kid);
-				console.log("Certificate length:", certificate.length);
-
 				// X.509証明書を公開鍵としてインポート
 				const publicKey = await importX509(certificate, "RS256");
-				console.log("Public key imported successfully");
 
 				// JWT検証（署名検証のみ）
 				const { payload } = await jwtVerify(token, publicKey);
 
-				console.log("JWT verification successful with kid:", kid);
-				console.log("Payload keys:", Object.keys(payload));
-
 				// 型ガードでペイロードを安全に検証
 				if (!isFirebaseJWTPayload(payload)) {
-					console.log("Invalid Firebase JWT payload structure");
 					return {
 						success: false,
 						error: "Invalid Firebase JWT payload structure",
@@ -108,12 +97,6 @@ export async function verifyAndExtractFirebaseJwt(
 
 				// 有効期限チェック
 				const currentTime = Math.floor(Date.now() / 1000);
-				console.log("JWT expiration check:", {
-					exp: payload.exp,
-					currentTime: currentTime,
-					expired: payload.exp < currentTime,
-					timeRemaining: payload.exp - currentTime,
-				});
 
 				if (payload.exp < currentTime) {
 					return {
@@ -130,35 +113,22 @@ export async function verifyAndExtractFirebaseJwt(
 					email: payload.email || null,
 					provider: payload.sign_in_provider || null,
 				};
-			} catch (verifyError) {
-				const errorMessage =
-					verifyError instanceof Error
-						? verifyError.message
-						: String(verifyError);
-				console.log(`JWT verification failed with kid ${kid}:`, errorMessage);
-				console.log("Error type:", typeof verifyError);
-				console.log(
-					"Error constructor:",
-					verifyError instanceof Error
-						? verifyError.constructor.name
-						: "Unknown",
-				);
+			} catch {
+				// セキュリティのため、詳細なエラー情報は出力しない
 			}
 		}
 
 		// すべてのキーで検証に失敗
-		console.log("All JWT verification attempts failed");
 		return {
 			success: false,
 			error: "JWT signature verification failed with all available keys",
 			code: 402,
 		};
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		console.error("Firebase JWT verification failed:", errorMessage);
+	} catch {
+		// セキュリティのため、詳細なエラー情報は出力しない
 		return {
 			success: false,
-			error: `Firebase JWT verification failed: ${errorMessage}`,
+			error: "Firebase JWT verification failed",
 			code: 500,
 		};
 	}
